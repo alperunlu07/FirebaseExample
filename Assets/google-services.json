@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "216743485041",
+    "firebase_url": "https://prettygames-fe07e-default-rtdb.firebaseio.com",
+    "project_id": "prettygames-fe07e",
+    "storage_bucket": "prettygames-fe07e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216743485041:android:badd050af15ce0186745d0",
+        "android_client_info": {
+          "package_name": "com.fouras.prettycaptain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216743485041-7tti6h7g6urar9qifdrbbquoi8jjag8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKTMPMJwQ9REAFm6iW66GrDbq5MGI65ao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216743485041-7tti6h7g6urar9qifdrbbquoi8jjag8l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216743485041-kpntgnfmrq07go39b3iekdqctbp5ejpg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fouras.prettycaptain"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216743485041:android:4b5f371bd65356c46745d0",
+        "android_client_info": {
+          "package_name": "com.game1.firebaseTest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216743485041-7tti6h7g6urar9qifdrbbquoi8jjag8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKTMPMJwQ9REAFm6iW66GrDbq5MGI65ao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216743485041-7tti6h7g6urar9qifdrbbquoi8jjag8l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216743485041-kpntgnfmrq07go39b3iekdqctbp5ejpg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fouras.prettycaptain"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
