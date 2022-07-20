@@ -24,6 +24,7 @@ public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
 
         //       }, null);
         MainManager.Instance.currentLocalPlayerId = Auth.Instance.currentUser.userUID;
+        GameManager.Instance.ConfigureGameArea(Auth.Instance.currentUser.userUID, null, null);
 
         //Play(); // for test 
     }

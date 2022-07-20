@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using APIs;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace Managers
 {
     
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoSingleton<GameManager>
     {
         public GameInfo currentGameInfo;
 
@@ -22,96 +23,189 @@ namespace Managers
             moveListeners =
                 new Dictionary<string, KeyValuePair<DatabaseReference, EventHandler<ChildChangedEventArgs>>>();
 
+        private string myUID;
+        public GameData gameData;
+
         private void Awake()
         {
             DontDestroyOnLoad(this);
         }
-        public void GetCurrentGameInfo(string gameId, string localPlayerId, Action<GameInfo> callback,
-            Action<AggregateException> fallback)
-        {
-            currentGameInfoListener =
-                DatabaseAPI.ListenForValueChanged($"games/{gameId}/gameInfo", args =>
-                {
-                    if (!args.Snapshot.Exists) return;
 
-                    var gameInfo =
-                        StringSerializationAPI.Deserialize(typeof(GameInfo), args.Snapshot.GetRawJsonValue()) as
-                            GameInfo;
-                    currentGameInfo = gameInfo;
-                    currentGameInfo.localPlayerId = localPlayerId;
-                    DatabaseAPI.StopListeningForValueChanged(currentGameInfoListener);
-                    callback(currentGameInfo);
-                }, fallback);
+        public void ConfigureGameArea(string _myUID, Action<string> onGameFound, Action<AggregateException> fallback)
+        {
+            myUID = _myUID;
+            Debug.Log("ConfigureGameArea");
+            DatabaseAPI.PostObject($"games/{myUID}", gameData, /*() => StartCoroutine(ListenerCheck()*/ CallBack,
+                // We listen for the placeholder value changing afterwards...
+                //() => 
+                (ex) => Debug.Log(ex.Message));
+
+            //StartCoroutine(matchMakingCO());
         }
 
-        public void SetLocalPlayerReady(Action callback, Action<AggregateException> fallback)
+        private void CallBack()
         {
-            DatabaseAPI.PostObject($"games/{currentGameInfo.gameId}/ready/{currentGameInfo.localPlayerId}", true,
-                callback,
-                fallback);
+            Debug.Log("Call back");
+            StartCoroutine(ListenerCheck());
         }
 
-        public void ListenForAllPlayersReady(IEnumerable<string> playersId, Action<string> onNewPlayerReady,
-            Action onAllPlayersReady,
-            Action<AggregateException> fallback)
+        IEnumerator ListenerCheck()
         {
-            readyPlayers = playersId.ToDictionary(playerId => playerId, playerId => false);
-            readyListener = DatabaseAPI.ListenForChildAdded($"games/{currentGameInfo.gameId}/ready/", args =>
-            {
-                readyPlayers[args.Snapshot.Key] = true;
-                onNewPlayerReady(args.Snapshot.Key);
-                if (!readyPlayers.All(readyPlayer => readyPlayer.Value)) return;
-                StopListeningForAllPlayersReady();
-                onAllPlayersReady();
-            }, fallback);
+            Debug.Log("ListenerCheck");
+            yield return new WaitForEndOfFrame();
+            string crossUID = MatchmakingManager.Instance.myState.pairUID;
+            DatabaseAPI.GetObject<GameData>($"games/{crossUID}", (gameData) => {
+                if (gameData != null) Debug.Log("GameData found");
+                else Debug.Log("Game data not found");
+            } , null);
         }
 
-        public void StopListeningForAllPlayersReady() => DatabaseAPI.StopListeningForChildAdded(readyListener);
+        //public void ListenJoin()
+        //{
+        //    //Debug.Log("listen Join");
 
-        public void SendMove(Move move, Action callback, Action<AggregateException> fallback)
-        {
-            DatabaseAPI.PushObject($"games/{currentGameInfo.gameId}/{currentGameInfo.localPlayerId}/moves/", move,
-                () =>
-                {
-                    Debug.Log("Moved sent successfully!");
-                    callback();
-                }, fallback);
-        }
+        //    stateListener = DatabaseAPI.ListenForValueChanged($"matchmaking/{Auth.Instance.currentUser.userUID}",
+        //        args =>
+        //        {
+        //            var values = args.Snapshot.GetRawJsonValue();
+        //            var myState_ = (MatchmakingState)StringSerializationAPI.Deserialize(typeof(MatchmakingState), values);
+        //            if (myState_ != null)
+        //            {
+        //                if (myState_.state == MState.wait && myState_.pairUID.Length > 1) // pairing request
+        //                {
+        //                    myState.pairUID = myState_.pairUID;
+        //                    PairingRequest();
+        //                }
+        //                if (myState_.state == MState.paired && myState_.pairUID.Length > 1) // accept response message
+        //                {
+        //                    isMaster = true;
+        //                    myState.pairUID = myState_.pairUID;
+        //                    myState.state = MState.paired;
+        //                    MatchmakingSceneHandler.Instance.OpenGameScene();
+        //                }
+        //            }
+        //            //Debug.Log(" me -> " + values);
 
-        public void ListenForLocalPlayerTurn(Action onLocalPlayerTurn, Action<AggregateException> fallback)
-        {
-            localPlayerTurnListener =
-                DatabaseAPI.ListenForValueChanged($"games/{currentGameInfo.gameId}/turn", args =>
-                {
-                    var turn =
-                        StringSerializationAPI.Deserialize(typeof(string), args.Snapshot.GetRawJsonValue()) as string;
-                    if (turn == currentGameInfo.localPlayerId) onLocalPlayerTurn();
-                }, fallback);
-        }
+        //        }, null);
+        //    queueListener = DatabaseAPI.ListenForValueChanged($"matchmaking/",
+        //        args =>
+        //        {
+        //            // This code gets once the placeholder value is changed
+        //            var gameId = args.Snapshot.GetRawJsonValue();
 
-        public void StopListeningForLocalPlayerTurn() =>
-            DatabaseAPI.StopListeningForValueChanged(localPlayerTurnListener);
+        //            //Debug.Log(" que -> " + gameId);
 
-        public void ListenForMoves(string playerId, Action<Move> onNewMove, Action<AggregateException> fallback)
-        {
-            moveListeners.Add(playerId, DatabaseAPI.ListenForChildAdded(
-                $"games/{currentGameInfo.gameId}/{playerId}/moves/",
-                args => onNewMove(
-                    StringSerializationAPI.Deserialize(typeof(Move), args.Snapshot.GetRawJsonValue()) as Move),
-                fallback));
-        }
+        //            DataSnapshot snapshot = args.Snapshot;
+        //            //Debug.Log(snapshot.ChildrenCount);
+        //            //Debug.Log(snapshot.Key);
 
-        public void StopListeningForMoves(string playerId)
-        {
-            DatabaseAPI.StopListeningForChildAdded(moveListeners[playerId]);
-            moveListeners.Remove(playerId);
-        }
+        //            //matchmakingLists = new List<MatchmakingList>();
+        //            matchmakingLists.Clear();
+        //            foreach (DataSnapshot snapshotChild in snapshot.Children)
+        //            {
+        //                //MatchmakingList obj_ = new MatchmakingList();
+        //                //obj_.userUID = snapshotChild.Key;
+        //                var child = snapshotChild.GetRawJsonValue();
+        //                //var std_ = JsonUtility.FromJson<MatchmakingState>(child);
+        //                MatchmakingState std_ = (MatchmakingState)StringSerializationAPI.Deserialize(typeof(MatchmakingState), child);
+        //                var obj_ = new MatchmakingList() { state = std_, userUID = snapshotChild.Key };
+        //                matchmakingLists.Add(obj_);
+        //                if (myState.state == MState.search && !waitPairReq)
+        //                {
+        //                    FindPairObj();
+        //                }
+        //            }
 
-        public void SetTurnToOtherPlayer(string currentPlayerId, Action callback, Action<AggregateException> fallback)
-        {
-            var otherPlayerId = currentGameInfo.playersIds.First(p => p != currentPlayerId);
-            DatabaseAPI.PostObject(
-                $"games/{currentGameInfo.gameId}/turn", otherPlayerId, callback, fallback);
-        }
+        //        }, null);
+
+        //}
+
+        //public void GetCurrentGameInfo(string gameId, string localPlayerId, Action<GameInfo> callback,
+        //    Action<AggregateException> fallback)
+        //{
+        //    currentGameInfoListener =
+        //        DatabaseAPI.ListenForValueChanged($"games/{gameId}/gameInfo", args =>
+        //        {
+        //            if (!args.Snapshot.Exists) return;
+
+        //            var gameInfo =
+        //                StringSerializationAPI.Deserialize(typeof(GameInfo), args.Snapshot.GetRawJsonValue()) as
+        //                    GameInfo;
+        //            currentGameInfo = gameInfo;
+        //            currentGameInfo.localPlayerId = localPlayerId;
+        //            DatabaseAPI.StopListeningForValueChanged(currentGameInfoListener);
+        //            callback(currentGameInfo);
+        //        }, fallback);
+        //}
+
+        //public void SetLocalPlayerReady(Action callback, Action<AggregateException> fallback)
+        //{
+        //    DatabaseAPI.PostObject($"games/{currentGameInfo.gameId}/ready/{currentGameInfo.localPlayerId}", true,
+        //        callback,
+        //        fallback);
+        //}
+
+        //public void ListenForAllPlayersReady(IEnumerable<string> playersId, Action<string> onNewPlayerReady,
+        //    Action onAllPlayersReady,
+        //    Action<AggregateException> fallback)
+        //{
+        //    readyPlayers = playersId.ToDictionary(playerId => playerId, playerId => false);
+        //    readyListener = DatabaseAPI.ListenForChildAdded($"games/{currentGameInfo.gameId}/ready/", args =>
+        //    {
+        //        readyPlayers[args.Snapshot.Key] = true;
+        //        onNewPlayerReady(args.Snapshot.Key);
+        //        if (!readyPlayers.All(readyPlayer => readyPlayer.Value)) return;
+        //        StopListeningForAllPlayersReady();
+        //        onAllPlayersReady();
+        //    }, fallback);
+        //}
+
+        //public void StopListeningForAllPlayersReady() => DatabaseAPI.StopListeningForChildAdded(readyListener);
+
+        //public void SendMove(Move move, Action callback, Action<AggregateException> fallback)
+        //{
+        //    DatabaseAPI.PushObject($"games/{currentGameInfo.gameId}/{currentGameInfo.localPlayerId}/moves/", move,
+        //        () =>
+        //        {
+        //            Debug.Log("Moved sent successfully!");
+        //            callback();
+        //        }, fallback);
+        //}
+
+        //public void ListenForLocalPlayerTurn(Action onLocalPlayerTurn, Action<AggregateException> fallback)
+        //{
+        //    localPlayerTurnListener =
+        //        DatabaseAPI.ListenForValueChanged($"games/{currentGameInfo.gameId}/turn", args =>
+        //        {
+        //            var turn =
+        //                StringSerializationAPI.Deserialize(typeof(string), args.Snapshot.GetRawJsonValue()) as string;
+        //            if (turn == currentGameInfo.localPlayerId) onLocalPlayerTurn();
+        //        }, fallback);
+        //}
+
+        //public void StopListeningForLocalPlayerTurn() =>
+        //    DatabaseAPI.StopListeningForValueChanged(localPlayerTurnListener);
+
+        //public void ListenForMoves(string playerId, Action<Move> onNewMove, Action<AggregateException> fallback)
+        //{
+        //    moveListeners.Add(playerId, DatabaseAPI.ListenForChildAdded(
+        //        $"games/{currentGameInfo.gameId}/{playerId}/moves/",
+        //        args => onNewMove(
+        //            StringSerializationAPI.Deserialize(typeof(Move), args.Snapshot.GetRawJsonValue()) as Move),
+        //        fallback));
+        //}
+
+        //public void StopListeningForMoves(string playerId)
+        //{
+        //    DatabaseAPI.StopListeningForChildAdded(moveListeners[playerId]);
+        //    moveListeners.Remove(playerId);
+        //}
+
+        //public void SetTurnToOtherPlayer(string currentPlayerId, Action callback, Action<AggregateException> fallback)
+        //{
+        //    var otherPlayerId = currentGameInfo.playersIds.First(p => p != currentPlayerId);
+        //    DatabaseAPI.PostObject(
+        //        $"games/{currentGameInfo.gameId}/turn", otherPlayerId, callback, fallback);
+        //}
     }
 }

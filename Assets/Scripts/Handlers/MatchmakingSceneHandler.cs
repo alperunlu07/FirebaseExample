@@ -44,34 +44,34 @@ namespace Handlers
         
         private void GameFound()
         {
-            MainManager.Instance.gameManager.GetCurrentGameInfo(gameId, MainManager.Instance.currentLocalPlayerId,
-                gameInfo =>
-                {
-                    Debug.Log("Game found. Ready-up!");
-                    gameFound = true;
-                    MainManager.Instance.gameManager.ListenForAllPlayersReady(gameInfo.playersIds,
-                        playerId => Debug.Log(playerId + " is ready!"), () =>
-                        {
-                            Debug.Log("All players are ready!");
-                            SceneManager.LoadScene("GameScene");
-                        }, Debug.Log);
-                }, Debug.Log);
+            //MainManager.Instance.gameManager.GetCurrentGameInfo(gameId, MainManager.Instance.currentLocalPlayerId,
+            //    gameInfo =>
+            //    {
+            //        Debug.Log("Game found. Ready-up!");
+            //        gameFound = true;
+            //        MainManager.Instance.gameManager.ListenForAllPlayersReady(gameInfo.playersIds,
+            //            playerId => Debug.Log(playerId + " is ready!"), () =>
+            //            {
+            //                Debug.Log("All players are ready!");
+            //                SceneManager.LoadScene("GameScene");
+            //            }, Debug.Log);
+            //    }, Debug.Log);
 
-            searchingPanel.SetActive(false);
-            foundPanel.SetActive(true);
+            //searchingPanel.SetActive(false);
+            //foundPanel.SetActive(true);
         }
 
         public void LeaveQueue()
         {
-            if (gameFound) MainManager.Instance.gameManager.StopListeningForAllPlayersReady();
-            else
-                MainManager.Instance.matchmakingManager.LeaveQueue(MainManager.Instance.currentLocalPlayerId,
-                    () => Debug.Log("Left queue successfully"), Debug.Log);
-            SceneManager.LoadScene("MenuScene");
+            //if (gameFound) MainManager.Instance.gameManager.StopListeningForAllPlayersReady();
+            //else
+            //    MainManager.Instance.matchmakingManager.LeaveQueue(MainManager.Instance.currentLocalPlayerId,
+            //        () => Debug.Log("Left queue successfully"), Debug.Log);
+            //SceneManager.LoadScene("MenuScene");
         }
 
-        public void Ready() =>
-            MainManager.Instance.gameManager.SetLocalPlayerReady(() => Debug.Log("You are now ready!"), Debug.Log);
+        //public void Ready() =>
+            //MainManager.Instance.gameManager.SetLocalPlayerReady(() => Debug.Log("You are now ready!"), Debug.Log);
 
         private void OnDestroy()
         {

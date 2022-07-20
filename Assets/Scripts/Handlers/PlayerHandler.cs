@@ -20,6 +20,7 @@ namespace Handlers
 
         private void Start()
         {
+            /*
             if (localPlayer)
             {
                 GetComponent<SpriteRenderer>().color = Color.red;
@@ -34,35 +35,36 @@ namespace Handlers
                 GetComponent<SpriteRenderer>().color = Color.blue;
                 MainManager.Instance.gameManager.ListenForMoves(playerId, ExecuteMove, Debug.Log);
             }
+            */
         }
 
         private void Update()
         {
-            if (executeMove)
-            {
-                transform.position += (Vector3)moveToExecute.direction;
-                executeMove = false;
-            }
+            //if (executeMove)
+            //{
+            //    transform.position += (Vector3)moveToExecute.direction;
+            //    executeMove = false;
+            //}
 
-            if (!localPlayer) return;
-            yourTurnText.SetActive(isLocalPlayerTurn);
-            if (!isLocalPlayerTurn) return;
+            //if (!localPlayer) return;
+            //yourTurnText.SetActive(isLocalPlayerTurn);
+            //if (!isLocalPlayerTurn) return;
 
-            var x = Input.GetAxisRaw("Horizontal");
-            var y = Input.GetAxisRaw("Vertical");
+            //var x = Input.GetAxisRaw("Horizontal");
+            //var y = Input.GetAxisRaw("Vertical");
 
-            if (Math.Abs(x) < 0.01f && Math.Abs(y) < 0.01f) return;
+            //if (Math.Abs(x) < 0.01f && Math.Abs(y) < 0.01f) return;
 
-            var move = new Move(new Vector2(x, y));
-            MainManager.Instance.gameManager.SendMove(move,
-                () => MainManager.Instance.gameManager.SetTurnToOtherPlayer(playerId, () => ExecuteMove(move),
-                    Debug.Log), error =>
-                    {
-                        Debug.Log(error);
-                        isLocalPlayerTurn = true;
-                    });
+            //var move = new Move(new Vector2(x, y));
+            //MainManager.Instance.gameManager.SendMove(move,
+            //    () => MainManager.Instance.gameManager.SetTurnToOtherPlayer(playerId, () => ExecuteMove(move),
+            //        Debug.Log), error =>
+            //        {
+            //            Debug.Log(error);
+            //            isLocalPlayerTurn = true;
+            //        });
 
-            isLocalPlayerTurn = false;
+            //isLocalPlayerTurn = false;
         }
 
         private void ExecuteMove(Move move)

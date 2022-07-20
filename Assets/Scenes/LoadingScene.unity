@@ -170,6 +170,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   matchmakingLists: []
+  avalaibleUsrList: []
+  myState:
+    state: 0
+    pairUID: 
+  lastSendingPairReq: []
+  waitPairReq: 0
+  isMaster: 0
 --- !u!114 &638558006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,17 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ccc9feeb78da2441bd16d3331babf04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userList:
-  - userId: 0
-    userUID: NHErKssf7OWLzo9sHpKJZUmnM6C2
-    username: alper
-    password: 12345
-    email: a@a.com
-  - userId: 1
-    userUID: NHErKssf7OWLzo9sHpKJZUmnM6C20
-    username: clone_0
-    password: 12345
-    email: a@a.com
+  userList: []
   userList2: []
 --- !u!1 &1709403952
 GameObject:

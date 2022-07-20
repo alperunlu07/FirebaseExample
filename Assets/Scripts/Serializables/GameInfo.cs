@@ -66,4 +66,10 @@ namespace Serializables
         public string userUID;
         public MatchmakingState state;
     }
+
+    public class GameData
+    {
+        public string data1;
+        public int data2;
+    }
 }
