@@ -1,12 +1,13 @@
 using System;
 using APIs;
 using Managers;
+using Serializables;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Handlers
 {
-    public class MatchmakingSceneHandler : MonoBehaviour
+    public class MatchmakingSceneHandler : MonoSingleton<MatchmakingSceneHandler>
     {
         public GameObject searchingPanel;
         public GameObject foundPanel;
@@ -14,24 +15,33 @@ namespace Handlers
         private bool gameFound;
         private bool readyingUp;
         public string gameId;
+        MState mm = MState.wait;
+        private void Start()
+        { 
+            JoinQueue();
 
-        private void Start() => JoinQueue();
+        }
+
+
 
         private void JoinQueue() =>
-            MainManager.Instance.matchmakingManager.JoinMatchmaking(MainManager.Instance.currentLocalPlayerId, gameId =>
+            MatchmakingManager.Instance.JoinMatchmaking(MainManager.Instance.currentLocalPlayerId, gameId =>
             {
                 this.gameId = gameId;
                 gameFound = true;
             },
                 Debug.Log);
 
+        
         private void Update()
         {
+
             if (!gameFound || readyingUp) return;
             readyingUp = true;
-            GameFound();
+            //GameFound();
         }
 
+        
         private void GameFound()
         {
             MainManager.Instance.gameManager.GetCurrentGameInfo(gameId, MainManager.Instance.currentLocalPlayerId,
@@ -63,10 +73,17 @@ namespace Handlers
         public void Ready() =>
             MainManager.Instance.gameManager.SetLocalPlayerReady(() => Debug.Log("You are now ready!"), Debug.Log);
 
-        public void OnDisable()
+        private void OnDestroy()
         {
-            MatchmakingManager.Instance.LeaveListeners();
-        }
+            if(MatchmakingManager.Instance!=null)
+                MatchmakingManager.Instance.LeaveListeners();
 
+        }
+ 
+
+        public void OpenGameScene()
+        {
+            SceneManager.LoadScene("GameScene");
+        }
     }
 }

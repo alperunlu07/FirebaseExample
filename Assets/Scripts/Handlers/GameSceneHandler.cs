@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Managers;
 using UnityEngine.SceneManagement;
-using System.Linq;
+using System.Linq; 
 
 namespace Handlers
 {
-    public class GameSceneHandler : MonoBehaviour
+    public class GameSceneHandler : MonoSingleton<GameSceneHandler>
     {
         public GameObject playerPrefab;
         public GameObject yourTurnText;
@@ -24,6 +24,7 @@ namespace Handlers
                 newPlayerHandler.localPlayer = player == MainManager.Instance.currentLocalPlayerId;
                 newPlayerHandler.yourTurnText = yourTurnText;
             }
+             
         }
 
         public void Leave()

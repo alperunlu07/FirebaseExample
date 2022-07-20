@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Serializables
 {
@@ -47,12 +48,16 @@ namespace Serializables
     [System.Serializable]
     public class MatchmakingState
     {
-        public mState state;
+        public MState state;
+        public string pairUID;
     }
-    public enum mState
+
+    public enum MState
     {
+        [EnumMember(Value = "wairtt")]
         wait = 0,
         search,
+        pairReq,
         paired
     }
     [System.Serializable]

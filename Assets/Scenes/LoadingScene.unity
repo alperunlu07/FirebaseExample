@@ -265,23 +265,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userList:
   - userId: 0
-    userUID: 
+    userUID: NHErKssf7OWLzo9sHpKJZUmnM6C2
     username: alper
     password: 12345
     email: a@a.com
   - userId: 1
-    userUID: 
-    username: alper
-    password: 12345
-    email: a@a.com
-  - userId: 2
-    userUID: 
-    username: alper
-    password: 12345
-    email: a@a.com
-  - userId: 3
-    userUID: 
-    username: alper
+    userUID: NHErKssf7OWLzo9sHpKJZUmnM6C20
+    username: clone_0
     password: 12345
     email: a@a.com
   userList2: []

@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &439598236
 RectTransform:
   m_ObjectHideFlags: 0
@@ -995,8 +995,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0485cb17207525143b81c46472b841d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userName: {fileID: 439598237}
   currentUserCountText: {fileID: 1598853559}
+  lobbyUsers: []
 --- !u!4 &1930866014
 Transform:
   m_ObjectHideFlags: 0

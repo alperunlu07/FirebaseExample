@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
 {
-    public InputField userName;
+    //public InputField userName;
     public Text currentUserCountText;
     public List<LobbyUser> lobbyUsers;
     void Start()
@@ -21,8 +21,11 @@ public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
         //       () =>
         //       {
         //           Debug.Log("Moved sent successfully!");
-                    
+
         //       }, null);
+        MainManager.Instance.currentLocalPlayerId = Auth.Instance.currentUser.userUID;
+
+        //Play(); // for test 
     }
     private void OnEnable()
     { 
@@ -39,7 +42,6 @@ public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
     {
         //string playerId = userName.text;
         //Debug.Log(playerId);
-        MainManager.Instance.currentLocalPlayerId = Auth.Instance.currentUser.userUID;
         SceneManager.LoadScene("MatchmakingScene");
     }
     // Update is called once per frame
@@ -47,10 +49,12 @@ public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
     {
 
     }
-    
+    private void OnDestroy()
+    {
+        MainManager.Instance.LeaveLobby(); 
+    }
     private void OnDisable()
     {
-        MainManager.Instance.LeaveLobby();
 
     }
 }

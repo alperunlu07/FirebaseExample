@@ -146,7 +146,20 @@ namespace APIs
                 {
                     currentUser.email = user.Email;
                     currentUser.username = user.DisplayName;
-                    currentUser.userUID = user.UserId; 
+                    if (Application.isEditor)
+                    { 
+                        var cloneCheck = Application.dataPath.Substring(0, Application.dataPath.Length - 7);
+                        cloneCheck = cloneCheck.Substring(cloneCheck.Length - 1); 
+                        int cloneId = -1;
+                        if(int.TryParse(cloneCheck, out cloneId))
+                        {
+                            currentUser.userUID = user.UserId + cloneCheck;
+                        }else
+                            currentUser.userUID = user.UserId;
+
+                    }
+                    else 
+                        currentUser.userUID = user.UserId; 
                     //string name = user.DisplayName;
                     //string email = user.Email;
                     //System.Uri photo_url = user.PhotoUrl;

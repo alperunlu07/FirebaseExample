@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class LoadingSceneHandler : MonoBehaviour
 {
     // Start is called before the first frame update
-    public List<User> userList;
+    public List<User> userList; // for test 
     public List<User> userList2;
 
     private void Awake()
@@ -23,7 +23,7 @@ public class LoadingSceneHandler : MonoBehaviour
         //DatabaseAPI.GetAllDatas("userInfos");
         DatabaseAPI.GetAllDatas("userInfos", new User(), postobjCallback);
 
-        DatabaseAPI.PostObject("userInfos", userList, null, null);
+        //DatabaseAPI.PostObject("userInfos", userList, null, null);
         //DatabaseAPI.GetJSON("userList", getData, null);
         //GetJSON(path, snapshot => callback(snapshot.Exists), fallback);
 
