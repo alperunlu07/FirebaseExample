@@ -12,6 +12,7 @@ namespace Handlers
         public GameObject searchingPanel;
         public GameObject foundPanel;
 
+
         private bool gameFound;
         private bool readyingUp;
         public string gameId;

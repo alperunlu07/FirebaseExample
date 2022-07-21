@@ -63,7 +63,8 @@ namespace Managers
         public void LeaveLobby()
         {
             DatabaseAPI.RemoveLobby();
-            DatabaseAPI.StopListeningForValueChanged(lobbyListener);
+            if(lobbyListener.Value != null)
+                DatabaseAPI.StopListeningForValueChanged(lobbyListener);
             //DatabaseAPI.PostJSON($"matchmaking/{playerId}", "null", callback, fallback);
         }
        

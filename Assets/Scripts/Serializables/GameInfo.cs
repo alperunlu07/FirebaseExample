@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using UnityEngine;
 
 namespace Serializables
 {
@@ -66,10 +67,12 @@ namespace Serializables
         public string userUID;
         public MatchmakingState state;
     }
-
+    [System.Serializable]
     public class GameData
     {
         public string data1;
-        public int data2;
+        public int data2 = -1;
+        public Vector3 position;
+
     }
 }

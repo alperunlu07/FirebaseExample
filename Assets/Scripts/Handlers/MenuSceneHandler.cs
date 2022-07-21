@@ -24,13 +24,14 @@ public class MenuSceneHandler : MonoSingleton<MenuSceneHandler>
 
         //       }, null);
         MainManager.Instance.currentLocalPlayerId = Auth.Instance.currentUser.userUID;
-        GameManager.Instance.ConfigureGameArea(Auth.Instance.currentUser.userUID, null, null);
+
+        MainManager.Instance.JoinLobby();
 
         //Play(); // for test 
     }
     private void OnEnable()
     { 
-        MainManager.Instance.JoinLobby();
+        
     }
     public void UserChange(List<LobbyUser> users)
     {

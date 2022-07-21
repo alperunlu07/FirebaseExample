@@ -204,10 +204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37571096ff8cb8649a849f19838446ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGameInfo:
-    gameId: 
-    playersIds: []
-    localPlayerId: 
+  gameData:
+    data1: adsasd
+    data2: 0
 --- !u!114 &638558008
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using APIs;
 using Firebase.Database;
+using Handlers;
 using Serializables;
 using UnityEngine;
 
@@ -12,12 +13,13 @@ namespace Managers
     
     public class GameManager : MonoSingleton<GameManager>
     {
-        public GameInfo currentGameInfo;
+        //public GameInfo currentGameInfo;
 
         private Dictionary<string, bool> readyPlayers;
         private KeyValuePair<DatabaseReference, EventHandler<ChildChangedEventArgs>> readyListener;
         private KeyValuePair<DatabaseReference, EventHandler<ValueChangedEventArgs>> localPlayerTurnListener;
         private KeyValuePair<DatabaseReference, EventHandler<ValueChangedEventArgs>> currentGameInfoListener;
+        private KeyValuePair<DatabaseReference, EventHandler<ValueChangedEventArgs>> otherPlayerListener;
 
         private readonly Dictionary<string, KeyValuePair<DatabaseReference, EventHandler<ChildChangedEventArgs>>>
             moveListeners =
@@ -26,16 +28,25 @@ namespace Managers
         private string myUID;
         public GameData gameData;
 
+        public GameData currentGD, otherGD;
+
         private void Awake()
         {
             DontDestroyOnLoad(this);
         }
+        private void Start()
+        {
 
+
+        }
         public void ConfigureGameArea(string _myUID, Action<string> onGameFound, Action<AggregateException> fallback)
         {
+            StartCoroutine(ListenerCheck());
+
             myUID = _myUID;
             Debug.Log("ConfigureGameArea");
-            DatabaseAPI.PostObject($"games/{myUID}", gameData, /*() => StartCoroutine(ListenerCheck()*/ CallBack,
+            currentGD.data2 = 0;
+            DatabaseAPI.PostObject($"games/{myUID}", currentGD, /*() => StartCoroutine(ListenerCheck()*/ CallBack,
                 // We listen for the placeholder value changing afterwards...
                 //() => 
                 (ex) => Debug.Log(ex.Message));
@@ -46,18 +57,43 @@ namespace Managers
         private void CallBack()
         {
             Debug.Log("Call back");
-            StartCoroutine(ListenerCheck());
+            //ListenerCheck();
         }
 
         IEnumerator ListenerCheck()
         {
             Debug.Log("ListenerCheck");
-            yield return new WaitForEndOfFrame();
             string crossUID = MatchmakingManager.Instance.myState.pairUID;
-            DatabaseAPI.GetObject<GameData>($"games/{crossUID}", (gameData) => {
-                if (gameData != null) Debug.Log("GameData found");
-                else Debug.Log("Game data not found");
-            } , null);
+            bool isGameData = false;
+            float t = Time.time;
+            while (!isGameData)
+            {
+                yield return new WaitForSeconds(1f);
+                DatabaseAPI.GetObject<GameData>($"games/{crossUID}/", (gameData) =>
+                {
+                    if (gameData.data2 != -1) isGameData = true;
+                    else Debug.Log("Game data not found");
+                }, null); 
+            }
+
+
+
+            otherPlayerListener = DatabaseAPI.ListenForValueChanged($"games/{crossUID}/",
+            args =>
+            {
+                var values = args.Snapshot.GetRawJsonValue();
+                otherGD = (GameData)StringSerializationAPI.Deserialize(typeof(GameData), values);
+
+                GameSceneHandler.Instance.UpdatePos();
+                //Debug.Log(" me -> " + values);
+
+            }, null);
+
+        }
+        public void UpdateValue()
+        {
+            currentGD.position = GameSceneHandler.Instance.cube.transform.position;
+            DatabaseAPI.PostObject($"games/{myUID}", currentGD, null, null);
         }
 
         //public void ListenJoin()

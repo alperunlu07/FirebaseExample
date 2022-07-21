@@ -330,7 +330,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867367427}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fb7fb6468a9676429a21d0a08b49420, type: 3}
   m_Name: 
@@ -445,6 +445,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 4865924007083798947, guid: 410ee2f620e28524bb875da46cb57b00, type: 3}
   yourTurnText: {fileID: 2080279931}
+  cube: {fileID: 867367427}
+  state: 0
 --- !u!4 &1114378468
 Transform:
   m_ObjectHideFlags: 0

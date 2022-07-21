@@ -112,6 +112,7 @@ namespace Managers
                         //MatchmakingList obj_ = new MatchmakingList();
                         //obj_.userUID = snapshotChild.Key;
                         var child = snapshotChild.GetRawJsonValue();
+                        //Debug.Log()
                         //var std_ = JsonUtility.FromJson<MatchmakingState>(child);
                         MatchmakingState std_ = (MatchmakingState)StringSerializationAPI.Deserialize(typeof(MatchmakingState), child);  
                         var obj_ = new MatchmakingList() { state = std_, userUID = snapshotChild.Key };
@@ -189,9 +190,11 @@ namespace Managers
         }
         public void LeaveListeners()
         {
+            if(queueListener.Value != null)
+                DatabaseAPI.StopListeningForValueChanged(queueListener);
+            if (stateListener.Value != null)
+                DatabaseAPI.StopListeningForValueChanged(stateListener); 
 
-            DatabaseAPI.StopListeningForValueChanged(queueListener);
-            DatabaseAPI.StopListeningForValueChanged(stateListener);
             DatabaseAPI.PostJSON($"matchmaking/" + Auth.Instance.currentUser.userUID, "null", null,null);
 
 

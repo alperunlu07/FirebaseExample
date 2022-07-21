@@ -51,14 +51,14 @@ public class LoadingSceneHandler : MonoBehaviour
     }
     void LoadScene()
     {
-        SceneManager.LoadScene("MenuScene");
+        //SceneManager.LoadScene("MenuScene");
 
-        //StartCoroutine(LoadSceneCO());
+        StartCoroutine(LoadSceneCO());
     }
     IEnumerator LoadSceneCO()
     {
-        yield return new WaitForSeconds(2f);
-        //SceneManager.LoadScene("MenuScene");
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene("MenuScene");
 
 
     }
